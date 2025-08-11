@@ -8,24 +8,22 @@ import os
 
 
 def format_duration(seconds):
-    #Format duration in seconds to HH:MM:SS
+    """Format duration in seconds to HH:MM:SS
+    """
     hours = seconds // 3600
     minutes = (seconds % 3600) // 60
     seconds = seconds % 60
     return f"{int(hours):02d}:{int(minutes):02d}:{int(seconds):02d}"
 
 def get_max_alt(flight):
+    """Determine the highest altitude for all altitudes of all fixes
+    """
     max_alt = max(fix.alt for fix in flight.fixes) if flight.fixes else 0
     return max_alt
 
 def read_pilot_data(file_path):
     """Read IGC header data and extract specific fields.
-    
-    Args:
-        file_path: Path to IGC file
-        
-    Returns:
-        List of header data
+    Returns: List of header data
     """
     # Initialize variables for each field
     device = "N/A"
