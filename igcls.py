@@ -6,6 +6,12 @@ from pathlib import Path
 import datetime
 import os
 
+from libigc.lib.dumpers import (
+    dump_thermals_to_wpt_file,
+    dump_thermals_to_cup_file,
+    dump_flight_to_kml,
+    dump_flight_to_csv
+)
 
 def format_duration(seconds):
     """Format duration in seconds to HH:MM:SS
@@ -93,6 +99,8 @@ def main():
     parser = argparse.ArgumentParser(description='Process IGC flight files.')
     parser.add_argument('-f', '--files', nargs='*', help='List of IGC files to process')
     parser.add_argument('-l', '--long', action='store_true', help='Show detailed thermals and glides')
+    parser.add_argument('-c', '--csv', action='store_true', help='Convert to CSV format')
+    parser.add_argument('-k', '--kml', action='store_true', help='Convert to KML format')
     args = parser.parse_args()
     
     # Determine which files to process
@@ -128,8 +136,18 @@ def main():
         try:
             flight = Flight.create_from_file(file_path)
             pilot_data = read_pilot_data(file_path)
-            #Extract the filename to use in the output table
+            # Extract the filename to use in the output table
             filename = Path(file_path).name
+
+            if args.csv:
+                csv_file_path = Path(file_path).with_suffix(".csv")
+                dump_flight_to_csv(flight, str(csv_file_path), thermals_filename_local=None)
+                #print(f"Converted {file_path} to {csv_file_path}")
+
+            if args.kml:
+                kml_file_path = Path(file_path).with_suffix(".kml")
+                dump_flight_to_kml(flight, str(kml_file_path))
+                #print(f"Converted {file_path} to {kml_file_path}")
 
         except Exception as e:
             #If there is an exception regarding the file, then put the file path, error status and the exception string in to the flights table
